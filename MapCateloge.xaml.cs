@@ -5417,10 +5417,10 @@ namespace EWLDitital.PresentationLayer.Views
                 }
             }
         }
-
+       
         Esri.ArcGISRuntime.Geometry.PointCollection importedlinepoints = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.Wgs84);
         Esri.ArcGISRuntime.Geometry.PointCollection normalizedimportedpoints = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
-        private void Import_Click(object sender, RoutedEventArgs e)
+        private void Import_Click(object sender, RoutedEventArgs e,string strfilename)
         {
             _sketchOverlay.Graphics.Clear();
             importedlinepoints.Clear();
@@ -5428,16 +5428,16 @@ namespace EWLDitital.PresentationLayer.Views
             SelectedRoutName = ""; 
             try
             {
-                string strfilename = "";
-                Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+               // string strfilename = "";
+               // Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
                 // openFileDialog.Filter = "All files (*.*)|*.*";
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    openFileDialog.DefaultExt = ".bsk";
-                    openFileDialog.Filter = "Basket(.bsk)|*.bsk";
-                    strfilename = openFileDialog.FileName;
-                    strfilename = openFileDialog.FileName;
-                }
+                //if (openFileDialog.ShowDialog() == true)
+                //{
+                //    openFileDialog.DefaultExt = ".bsk";
+                //    openFileDialog.Filter = "Basket(.bsk)|*.bsk";
+                //    strfilename = openFileDialog.FileName;
+                //    strfilename = openFileDialog.FileName;
+                //}
 
                 XDocument doc1 = XDocument.Load(strfilename);
                 XNamespace ns = "http://www.cirm.org/RTZ/1/0";
@@ -5663,7 +5663,7 @@ namespace EWLDitital.PresentationLayer.Views
         }
 
       
-        private void ExportRoute_Click(object sender, RoutedEventArgs e)
+        private void ExportRoute_Click(object sender, RoutedEventArgs e,string fpath)
         {
             XmlDeclaration xmldecl;
             XmlDocument doc = new XmlDocument();
@@ -5743,16 +5743,8 @@ namespace EWLDitital.PresentationLayer.Views
 
             
             doc.AppendChild(root);
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.DefaultExt = ".rtz";
-            dlg.Filter = "RTZ(.rtz)|*.rtz | Tokyo Keiki EC8x00|*.csv)";
+            doc.Save(fpath);
 
-           
-
-            if (dlg.ShowDialog() == true)
-            {
-                doc.Save(dlg.FileName);
-            }
 
 
         }
@@ -5763,16 +5755,16 @@ namespace EWLDitital.PresentationLayer.Views
             public DateTime Deadline;
         }
 
-        private void csv_export(object sender, RoutedEventArgs e)
+        private void csv_export(object sender, RoutedEventArgs e,string fpath)
         {
             List<double> distance = new List<double>();
             Esri.ArcGISRuntime.Geometry.PointCollection geo_points = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.Wgs84);
 
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.DefaultExt = ".csv";
-            dlg.Filter = "RTZ(.rtz)|*.rtz | Tokyo Keiki EC8x00|*.csv";
-            dlg.ShowDialog();
-            string fpath = dlg.FileName;
+           // Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            //dlg.DefaultExt = ".csv";
+           // dlg.Filter = "RTZ(.rtz)|*.rtz | Tokyo Keiki EC8x00|*.csv";
+           // dlg.ShowDialog();
+           // string fpath = dlg.FileName;
             string fpath_new = fpath ;
             //string filePath = @"C:\Users\nanip\OneDrive\Desktop\routelineexport\File7.csv";
             DataAccessLayer.RoutRepository objRout = new DataAccessLayer.RoutRepository();
@@ -5837,7 +5829,7 @@ namespace EWLDitital.PresentationLayer.Views
 
         }
         Esri.ArcGISRuntime.Geometry.PointCollection geode_importedlinepoints = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.Wgs84);
-        private void csv_Import_Click(object sender, RoutedEventArgs e)
+        private void csv_Import_Click(object sender, RoutedEventArgs e,string fpath)
         {
             _sketchOverlay.Graphics.Clear();
             importedlinepoints.Clear();
@@ -5851,18 +5843,18 @@ namespace EWLDitital.PresentationLayer.Views
                                 };
             try
             {
-                string strfilename = "";
-                Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+                //string strfilename = "";
+               // Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
                 // openFileDialog.Filter = "All files (*.*)|*.*";
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    openFileDialog.DefaultExt = ".bsk";
-                    openFileDialog.Filter = "Basket(.bsk)|*.bsk";
-                    strfilename = openFileDialog.FileName;
-                    strfilename = openFileDialog.FileName;
-                }
+                //if (openFileDialog.ShowDialog() == true)
+                //{
+                //    openFileDialog.DefaultExt = ".bsk";
+                //    openFileDialog.Filter = "Basket(.bsk)|*.bsk";
+                //    strfilename = openFileDialog.FileName;
+                //    strfilename = openFileDialog.FileName;
+                //}
 
-                string[] csvlines = File.ReadAllLines(strfilename);
+                string[] csvlines = File.ReadAllLines(fpath);
                 List<string> strt = new List<string>();
 
                 var coun = csvlines.Count();
@@ -5957,6 +5949,47 @@ namespace EWLDitital.PresentationLayer.Views
                 MessageBox.Show(ex.Message);
             }
         }
+        private void export_both(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.Filter = "RTZ(.rtz)|*.rtz | Tokyo Keiki EC8x00|*.csv";
+            dlg.ShowDialog();
+            string fpath = dlg.FileName;
+            if (fpath.Contains(".csv"))
+            {
+                csv_export_new(sender, e, fpath);
+            }
+            else if (fpath.Contains(".rtz"))
+            {
+                ExportRoute_Click(sender, e,fpath);
+               
+            }
+
+        }
+        private void import_both(object sender, RoutedEventArgs e)
+        {
+            string strfilename = "";
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            // openFileDialog.Filter = "All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                openFileDialog.DefaultExt = ".bsk";
+                openFileDialog.Filter = "Basket(.bsk)|*.bsk";
+                strfilename = openFileDialog.FileName;
+
+            }
+            if (strfilename.Contains(".csv"))
+            {
+                csv_Import_Click(sender, e, strfilename);
+                // csv_export_new(sender, e, strfilename);
+            }
+            else if (strfilename.Contains(".rtz"))
+            {
+                Import_Click(sender, e, strfilename);
+                //csv_export(sender, e, strfilename);
+            }
+
+        }
         public static (int, string) dotCount_manipulatestring(string str)
         {
             int spcctr = 0;
@@ -6013,16 +6046,16 @@ namespace EWLDitital.PresentationLayer.Views
            
             return (spcctr, sub2);
         }
-        private void csv_export_new(object sender, RoutedEventArgs e)
+        private void csv_export_new(object sender, RoutedEventArgs e,string fpath)
         {
             List<double> distance = new List<double>();
             Esri.ArcGISRuntime.Geometry.PointCollection geo_points = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.Wgs84);
 
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.DefaultExt = ".csv";
-            dlg.Filter = "RTZ(.rtz)|*.rtz | Tokyo Keiki EC8x00|*.csv";
-            dlg.ShowDialog();
-            string fpath = dlg.FileName;
+            //Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            //dlg.DefaultExt = ".csv";
+            //dlg.Filter = "RTZ(.rtz)|*.rtz | Tokyo Keiki EC8x00|*.csv";
+            //dlg.ShowDialog();
+            //string fpath = dlg.FileName;
             string fpath_new = fpath;
             //string filePath = @"C:\Users\nanip\OneDrive\Desktop\routelineexport\File7.csv";
             DataAccessLayer.RoutRepository objRout = new DataAccessLayer.RoutRepository();
@@ -6272,6 +6305,7 @@ namespace EWLDitital.PresentationLayer.Views
             }
             routelineconfigclear();
         }
+       
         private void Route_clear_Click(object sender, RoutedEventArgs e)
         {
             string message = "Are you sure you want to clear this route line?";
@@ -8429,69 +8463,132 @@ namespace EWLDitital.PresentationLayer.Views
         }
         private async void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            savemenu.IsEnabled = true;
-            _sketchOverlay.Graphics.Clear();
-            routewaypointoverlay.Graphics.Clear();
-            MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
-            savemenu.IsEnabled = true;
-            Esri.ArcGISRuntime.Geometry.PointCollection databasepointcollection_web = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
-            List<MapPoint> databasepointslist = new List<MapPoint>();
-
-            DataAccessLayer.RoutRepository objRout = new DataAccessLayer.RoutRepository();
-            DataTable dt = new DataTable();
-            dt = objRout.GetRouteLineDetails(SelectedRoutName);
-
-            for (int i = 0; i < dt.Rows.Count; i++)
+            if (SelectedRoutName == "" && importedlinepoints.Count > 0)
             {
-                var latit = Convert.ToDouble(dt.Rows[i]["Latitude"]);//add this
-                var longit = Convert.ToDouble(dt.Rows[i]["Longitude"]);//add this
-                MapPoint mp1 = new MapPoint(latit, longit, SpatialReferences.WebMercator);
-                databasepointcollection_web.Add(latit, longit);
-                databasepointslist.Add(mp1);
-            }
-
-
-            var l1 = loadrouteline_create(databasepointcollection_web);
-            var editPolyline1 = l1 as Polyline;
-            this.editlinebuilder = new PolylineBuilder(editPolyline1);
-            var item2geom = loadrouteline_geom_create_new(databasepointcollection_web);
-            var editPolyline2 = item2geom as Polyline;
-            try
-            {
-                if (editlinebuilder.Parts.Count > 1)
+                try
                 {
-
-                    var config = new SketchEditConfiguration()
+                    savemenu.IsEnabled = true;
+                    _sketchOverlay.Graphics.Clear();
+                    routewaypointoverlay.Graphics.Clear();
+                    MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
+                    Mouse.OverrideCursor = Cursors.Cross;
+                    savemenu.IsEnabled = true;
+                    // Esri.ArcGISRuntime.Geometry.PointCollection databasepointcollection_web = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
+                    // List<MapPoint> databasepointslist = new List<MapPoint>();
+                    var l1 = loadrouteline_create(normalizedimportedpoints);
+                    var editPolyline1 = l1 as Polyline;
+                    this.editlinebuilder = new PolylineBuilder(editPolyline1);
+                    var item2geom = loadrouteline_geom_create_new(normalizedimportedpoints);
+                    var editPolyline2 = item2geom as Polyline;//add this
+                    if (editlinebuilder.Parts.Count > 1)
                     {
-                        AllowVertexEditing = true,
-                        AllowMove = true,
-                        AllowRotate = false,
 
-                        ResizeMode = SketchResizeMode.None
-                    };
-                    sketchEditor();
-                    Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await MyMapView.SketchEditor.StartAsync(editPolyline2);
-                }
-                else
-                {
-                    var config = new SketchEditConfiguration()
+                        var config = new SketchEditConfiguration()
+                        {
+                            AllowVertexEditing = true,
+                            AllowMove = true,
+                            AllowRotate = false,
+
+                            ResizeMode = SketchResizeMode.None
+                        };
+                        sketchEditor();
+                        Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await MyMapView.SketchEditor.StartAsync(editPolyline2);
+                    }
+                    else
                     {
-                        AllowVertexEditing = true,
-                        AllowMove = true,
-                        AllowRotate = false,
+                        var config = new SketchEditConfiguration()
+                        {
+                            AllowVertexEditing = true,
+                            AllowMove = true,
+                            AllowRotate = false,
 
-                        ResizeMode = SketchResizeMode.None
-                    };
-                    sketchEditor();
-                    Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await MyMapView.SketchEditor.StartAsync(editPolyline1);
+                            ResizeMode = SketchResizeMode.None
+                        };
+                        sketchEditor();
+                        Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await MyMapView.SketchEditor.StartAsync(editPolyline1);// add this
+
+                    }
 
                 }
+                catch (TaskCanceledException)
+                {
+                    // Ignore ... let the user cancel editing
+                }
+
+
             }
-            catch (TaskCanceledException)
+            else
             {
-                // Ignore ... let the user cancel editing
+
+
+                try
+                {
+                    savemenu.IsEnabled = true;
+                    _sketchOverlay.Graphics.Clear();
+                    routewaypointoverlay.Graphics.Clear();
+                    MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
+                    Mouse.OverrideCursor = Cursors.Cross;
+                    savemenu.IsEnabled = true;
+                    Esri.ArcGISRuntime.Geometry.PointCollection databasepointcollection_web = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
+                    List<MapPoint> databasepointslist = new List<MapPoint>();
+
+                    DataAccessLayer.RoutRepository objRout = new DataAccessLayer.RoutRepository();
+                    DataTable dt = new DataTable();
+                    dt = objRout.GetRouteLineDetails(SelectedRoutName);
+
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        var latit = Convert.ToDouble(dt.Rows[i]["Latitude"]);//add this
+                        var longit = Convert.ToDouble(dt.Rows[i]["Longitude"]);//add this
+                        MapPoint mp1 = new MapPoint(latit, longit, SpatialReferences.WebMercator);
+                        databasepointcollection_web.Add(latit, longit);
+                        databasepointslist.Add(mp1);
+                    }
+
+
+                    var l1 = loadrouteline_create(databasepointcollection_web);
+                    var editPolyline1 = l1 as Polyline;
+                    this.editlinebuilder = new PolylineBuilder(editPolyline1);
+                    var item2geom = loadrouteline_geom_create_new(databasepointcollection_web);
+                    var editPolyline2 = item2geom as Polyline;//add this
+
+                    if (editlinebuilder.Parts.Count > 1)
+                    {
+
+                        var config = new SketchEditConfiguration()
+                        {
+                            AllowVertexEditing = true,
+                            AllowMove = true,
+                            AllowRotate = false,
+
+                            ResizeMode = SketchResizeMode.None
+                        };
+                        sketchEditor();
+                        Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await MyMapView.SketchEditor.StartAsync(editPolyline2);
+                    }
+                    else
+                    {
+                        var config = new SketchEditConfiguration()
+                        {
+                            AllowVertexEditing = true,
+                            AllowMove = true,
+                            AllowRotate = false,
+
+                            ResizeMode = SketchResizeMode.None
+                        };
+                        sketchEditor();
+                        Esri.ArcGISRuntime.Geometry.Geometry newGeometry = await MyMapView.SketchEditor.StartAsync(editPolyline1);// add this
+
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Ignore ... let the user cancel editing
+                }
             }
         }
+        
+        
         private Esri.ArcGISRuntime.Geometry.Geometry loadrouteline_geom_create_new(Esri.ArcGISRuntime.Geometry.PointCollection pc)//add this method
         {
             var polyline = new Esri.ArcGISRuntime.Geometry.Polyline(pc);
