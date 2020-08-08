@@ -3078,6 +3078,32 @@ namespace EWLDitital.PresentationLayer.Views
                         // route_symbolsadding_webmerc(get);
                     }
                 }
+                //else if (importedlinepoints_edit.Count > 1)
+                //{
+                //    var pointline = loadrouteline_create(normalizedimportedpoints_edit);
+
+                //    var roadPolyline = pointline as Esri.ArcGISRuntime.Geometry.Polyline;
+                //    // var roadPolyline = graphic.Geometry as Esri.ArcGISRuntime.Geometry.Polyline;
+                //    this.polylineBuilder = new PolylineBuilder(roadPolyline);
+                //    if (polylineBuilder.Parts.Count > 1)
+                //    {
+                //        var item = coordinatesystem_polyline_new(pointline);
+                //        foreach (var item1 in item)
+                //        {
+                //            var ge = Graphiccoordinates_Aftertransform(item1);
+                //            var graphic = new Graphic(ge);
+                //            Geometry_OnviewTap(graphic);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        var loadedgraphic = coordinatesystem_polyline(pointline);
+                //        var ge = Graphiccoordinates_Aftertransform(loadedgraphic);
+                //        var graphic = new Graphic(ge);
+                //        Geometry_OnviewTap(graphic);
+                //        // route_symbolsadding_webmerc(get);
+                //    }
+                //}
                 else
                 {
                     DataAccessLayer.RoutRepository objRout = new DataAccessLayer.RoutRepository();
@@ -5417,14 +5443,18 @@ namespace EWLDitital.PresentationLayer.Views
                 }
             }
         }
-       
-        Esri.ArcGISRuntime.Geometry.PointCollection importedlinepoints = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.Wgs84);
+       // we have to save editedimportepoints clue
+         Esri.ArcGISRuntime.Geometry.PointCollection importedlinepoints = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.Wgs84);
         Esri.ArcGISRuntime.Geometry.PointCollection normalizedimportedpoints = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
+        Esri.ArcGISRuntime.Geometry.PointCollection importedlinepoints_edit = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
+        Esri.ArcGISRuntime.Geometry.PointCollection normalizedimportedpoints_edit = new Esri.ArcGISRuntime.Geometry.PointCollection(SpatialReferences.WebMercator);
         private void Import_Click(object sender, RoutedEventArgs e,string strfilename)
         {
             _sketchOverlay.Graphics.Clear();
             importedlinepoints.Clear();
             routewaypointoverlay.Graphics.Clear();
+            importedlinepoints_edit.Clear();
+            normalizedimportedpoints_edit.Clear();
             SelectedRoutName = ""; 
             try
             {
@@ -6312,34 +6342,67 @@ namespace EWLDitital.PresentationLayer.Views
             string caption = "Confirmation";
             lstSelectedRoute.Clear();
             SelectedRoutName = "";
-            var set=MyMapView.SketchEditor.Geometry.GeometryType.ToString();
-            MessageBoxButton buttons = MessageBoxButton.YesNo;
-            MessageBoxImage icon = MessageBoxImage.Question;
-            if (MessageBox.Show(message, caption, buttons, icon) == MessageBoxResult.Yes)
+            if (MyMapView.SketchEditor.Geometry==null)
             {
-                if (set== "Polyline" && MyMapView.SketchEditor.CancelCommand.CanExecute(null))
+                MessageBoxButton buttons = MessageBoxButton.YesNo;
+                MessageBoxImage icon = MessageBoxImage.Question;
+                if (MessageBox.Show(message, caption, buttons, icon) == MessageBoxResult.Yes)
                 {
-                    MyMapView.SketchEditor.CancelCommand.Execute(null);
-                    // lvUsers.Items.Clear();
-                    var systemCursor1 = System.Windows.Input.Cursors.Arrow;
-                    Cursor = systemCursor1;
-                    MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
-                    MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
+                    //if (set == "Polyline" && MyMapView.SketchEditor.CancelCommand.CanExecute(null))
+                    //{
+                    //    MyMapView.SketchEditor.CancelCommand.Execute(null);
+                    //    // lvUsers.Items.Clear();
+                    //    var systemCursor1 = System.Windows.Input.Cursors.Arrow;
+                    //    Cursor = systemCursor1;
+                    //    MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
+                    //    MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
+                    //}
+                    if (_sketchOverlay.Graphics.Count >= 1)
+                    {
+                        _sketchOverlay.Graphics.Clear();
+                        routewaypointoverlay.Graphics.Clear();
+                        importedlinepoints.Clear();
+                        normalizedimportedpoints.Clear();
+                        gridrouteline.Clear();//add this new line
+                        MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
+                        MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
+                    }
+
                 }
-                else if(_sketchOverlay.Graphics.Count>=1)
-                {
-                    _sketchOverlay.Graphics.Clear();
-                    routewaypointoverlay.Graphics.Clear();
-                    gridrouteline.Clear();//add this new line
-                    MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
-                    MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
-                }
-                
             }
+            
             else
             {
-                return;
+                var set = MyMapView.SketchEditor.Geometry.GeometryType.ToString();
+                MessageBoxButton buttons = MessageBoxButton.YesNo;
+                MessageBoxImage icon = MessageBoxImage.Question;
+                if (MessageBox.Show(message, caption, buttons, icon) == MessageBoxResult.Yes)
+                {
+                    if (set == "Polyline" && MyMapView.SketchEditor.CancelCommand.CanExecute(null))
+                    {
+                        MyMapView.SketchEditor.CancelCommand.Execute(null);
+                        // lvUsers.Items.Clear();
+                        var systemCursor1 = System.Windows.Input.Cursors.Arrow;
+                        Cursor = systemCursor1;
+                        MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
+                        MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
+                    }
+                    else if (_sketchOverlay.Graphics.Count >= 1)
+                    {
+                        _sketchOverlay.Graphics.Clear();
+                        routewaypointoverlay.Graphics.Clear();
+                        gridrouteline.Clear();//add this new line
+                        MyMapView.GeoViewTapped -= MapViewTapped_Mouse_Point;
+                        MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
+                    }
+
+                }
+                else
+                {
+                    return;
+                }
             }
+           
            
           
             routelineconfigclear();
@@ -6445,14 +6508,41 @@ namespace EWLDitital.PresentationLayer.Views
                             objMgr.DeleteRouteLineByName(txtRouteName.Text.Trim());
 
                             int result1 = objRout.InsertRoute(txtRouteName.Text, waypointcount);
+                            int count = 0;//to know edit import
+                            MapPoint mpt_;
+                            List<MapPoint> list_editpts = new List<MapPoint>();
                             if (result1 > 0)
                             {
                                 foreach (var ter in routelinepointlist)
                                 {
-                                    double lat = ter.X;
-                                    double longi = ter.Y;
-                                    objRout.InsertRouteDetails(result1, lat.ToString(), longi.ToString());
+                                    if (importedlinepoints.Count > 1)//to reset that exisiting imported points
+                                    {
+                                        importedlinepoints.Clear();
+                                        normalizedimportedpoints.Clear();
+                                        count++;
+
+                                    }
+                                    //else if (count >= 1)//filling the new edited values to them
+                                    //{
+                                    //    double lat1 = ter.X;
+                                    //    double longi1 = ter.Y;
+                                    //    mpt_ = new MapPoint(lat1, longi1, SpatialReferences.WebMercator);
+                                    //    importedlinepoints_edit.Add(mpt_);
+                                    //    list_editpts.Add(mpt_);
+                                    //    objRout.InsertRouteDetails(result1, lat1.ToString(), longi1.ToString());
+                                    //}
+                                    else
+                                    {
+                                        double lat = ter.X;
+                                        double longi = ter.Y;
+                                        objRout.InsertRouteDetails(result1, lat.ToString(), longi.ToString());
+                                    }
+                                   
                                 }
+                                //if (count >= 1)
+                                //{
+                                //    normalizedimportedpoints_edit = CalcNormalize_latest(list_editpts);
+                                //}
                             }
                         }
                         if (MessageBoxResult.No == result)
@@ -6463,14 +6553,42 @@ namespace EWLDitital.PresentationLayer.Views
                     else
                     {
                         int result = objRout.InsertRoute(txtRouteName.Text, waypointcount);
+                        int count = 0;//to know edit import
+                        MapPoint mpt_ = null;//to know sketch editor map point
+                        List<MapPoint> list_editpts = new List<MapPoint>();
                         if (result > 0)
                         {
                             foreach (var ter in routelinepointlist)
                             {
-                                double lat = ter.X;
-                                double longi = ter.Y;
-                                objRout.InsertRouteDetails(result, lat.ToString(), longi.ToString());
+                               
+                                if (importedlinepoints.Count > 1)
+                                {
+                                    importedlinepoints.Clear();
+                                    normalizedimportedpoints.Clear();
+                                    count++;
+                                    
+                                }
+                                //else if (count >= 1)
+                                //{
+                                //    double lat = ter.X;
+                                //    double longi = ter.Y;
+                                //    mpt_ = new MapPoint(lat, longi,SpatialReferences.WebMercator);
+                                //    importedlinepoints_edit.Add(mpt_);
+                                //    list_editpts.Add(mpt_);
+                                //    objRout.InsertRouteDetails(result, lat.ToString(), longi.ToString());
+                                //}
+                                else
+                                {
+                                    double lat = ter.X;
+                                    double longi = ter.Y;
+                                    objRout.InsertRouteDetails(result, lat.ToString(), longi.ToString());
+                                }
+                                
                             }
+                            //if (count >= 1)
+                            //{
+                            //    normalizedimportedpoints_edit = CalcNormalize_latest(list_editpts);
+                            //}
                         }
                     }
 
@@ -6519,9 +6637,9 @@ namespace EWLDitital.PresentationLayer.Views
                     MessageBox.Show("Please draw at least two waypoints", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
         }
         private void save_Click(object sender, RoutedEventArgs e)
