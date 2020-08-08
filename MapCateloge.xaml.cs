@@ -6513,30 +6513,19 @@ namespace EWLDitital.PresentationLayer.Views
                             List<MapPoint> list_editpts = new List<MapPoint>();
                             if (result1 > 0)
                             {
+                                if (importedlinepoints.Count > 1)//to reset that exisiting imported points
+                                {
+                                    importedlinepoints.Clear();
+                                    normalizedimportedpoints.Clear();
+                                    count++;
+
+                                }
                                 foreach (var ter in routelinepointlist)
                                 {
-                                    if (importedlinepoints.Count > 1)//to reset that exisiting imported points
-                                    {
-                                        importedlinepoints.Clear();
-                                        normalizedimportedpoints.Clear();
-                                        count++;
-
-                                    }
-                                    //else if (count >= 1)//filling the new edited values to them
-                                    //{
-                                    //    double lat1 = ter.X;
-                                    //    double longi1 = ter.Y;
-                                    //    mpt_ = new MapPoint(lat1, longi1, SpatialReferences.WebMercator);
-                                    //    importedlinepoints_edit.Add(mpt_);
-                                    //    list_editpts.Add(mpt_);
-                                    //    objRout.InsertRouteDetails(result1, lat1.ToString(), longi1.ToString());
-                                    //}
-                                    else
-                                    {
-                                        double lat = ter.X;
-                                        double longi = ter.Y;
-                                        objRout.InsertRouteDetails(result1, lat.ToString(), longi.ToString());
-                                    }
+                                   
+                                      double lat = ter.X;
+                                      double longi = ter.Y;
+                                     objRout.InsertRouteDetails(result1, lat.ToString(), longi.ToString());
                                    
                                 }
                                 //if (count >= 1)
@@ -6544,6 +6533,7 @@ namespace EWLDitital.PresentationLayer.Views
                                 //    normalizedimportedpoints_edit = CalcNormalize_latest(list_editpts);
                                 //}
                             }
+                            
                         }
                         if (MessageBoxResult.No == result)
                         {
@@ -6558,31 +6548,19 @@ namespace EWLDitital.PresentationLayer.Views
                         List<MapPoint> list_editpts = new List<MapPoint>();
                         if (result > 0)
                         {
+                            if (importedlinepoints.Count > 1)
+                            {
+                                importedlinepoints.Clear();
+                                normalizedimportedpoints.Clear();
+                                count++;
+
+                            }
                             foreach (var ter in routelinepointlist)
                             {
-                               
-                                if (importedlinepoints.Count > 1)
-                                {
-                                    importedlinepoints.Clear();
-                                    normalizedimportedpoints.Clear();
-                                    count++;
-                                    
-                                }
-                                //else if (count >= 1)
-                                //{
-                                //    double lat = ter.X;
-                                //    double longi = ter.Y;
-                                //    mpt_ = new MapPoint(lat, longi,SpatialReferences.WebMercator);
-                                //    importedlinepoints_edit.Add(mpt_);
-                                //    list_editpts.Add(mpt_);
-                                //    objRout.InsertRouteDetails(result, lat.ToString(), longi.ToString());
-                                //}
-                                else
-                                {
-                                    double lat = ter.X;
-                                    double longi = ter.Y;
-                                    objRout.InsertRouteDetails(result, lat.ToString(), longi.ToString());
-                                }
+                                double lat = ter.X;
+                                double longi = ter.Y;
+                                objRout.InsertRouteDetails(result, lat.ToString(), longi.ToString());
+                                
                                 
                             }
                             //if (count >= 1)
@@ -8656,11 +8634,15 @@ namespace EWLDitital.PresentationLayer.Views
 
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
-                        var latit = Convert.ToDouble(dt.Rows[i]["Latitude"]);//add this
-                        var longit = Convert.ToDouble(dt.Rows[i]["Longitude"]);//add this
-                        MapPoint mp1 = new MapPoint(latit, longit, SpatialReferences.WebMercator);
-                        databasepointcollection_web.Add(latit, longit);
-                        databasepointslist.Add(mp1);
+                      
+                      
+                            var latit = Convert.ToDouble(dt.Rows[i]["Latitude"]);//add this
+                            var longit = Convert.ToDouble(dt.Rows[i]["Longitude"]);//add this
+                            MapPoint mp1 = new MapPoint(latit, longit, SpatialReferences.WebMercator);
+                            databasepointcollection_web.Add(latit, longit);
+                            databasepointslist.Add(mp1);
+                        
+                       
                     }
 
 
