@@ -37,6 +37,7 @@ using Polyline = Esri.ArcGISRuntime.Geometry.Polyline;
 using ControlzEx.Standard;
 using System.Text.RegularExpressions;
 using System.Windows.Navigation;
+using System.Globalization;
 
 namespace EWLDitital.PresentationLayer.Views
 {
@@ -709,7 +710,8 @@ namespace EWLDitital.PresentationLayer.Views
 
                 MyMapView.GeoViewTapped += MapViewTapped_Mouse_Point;
                 MyMapView.MouseMove += MapView_MouseMoved;
-                MyMapView.PreviewMouseWheel += mouseWheel_Changed;
+                MyMapView.PreviewMouseWheel += mouseWheel_scale;
+              //  MyMapView.MouseWheel += mouseWheel_scale;
 
             }
             catch (Exception ex)
@@ -3399,15 +3401,30 @@ namespace EWLDitital.PresentationLayer.Views
                 MessageBox.Show(ex.Message);
             }
         }
+        private void mouseWheel_scale(object sender, MouseWheelEventArgs e)
+        {
+            var scal = MyMapView.GetCurrentViewpoint(ViewpointType.CenterAndScale);
+            var scal1 = scal.TargetScale;
+            var displayed_value = scal1.ToString("N0");
+            var displ1 = Convert.ToDouble(displayed_value);
+            var formated_val=displ1.ToString("N0", CultureInfo.InvariantCulture);
+            var finalstring = "Scale View - 1 :" + formated_val;
+            //var displayed_value1 = formated_val.ToString("N0");
+            mylblClickCount1.Content =finalstring;
+        }
         private void MapView_MouseMoved(object sender, MouseEventArgs e)
         {
+
             try
             {
+               
+               
                 System.Windows.Point hoverPoint = e.GetPosition(MyMapView);
 
                 // Get the physical map location corresponding to the mouse position.
                 MapPoint hoverLocation = MyMapView.ScreenToLocation(hoverPoint);
                 MapPoint aftertransformhoverloc = Mapcoordinates_Change(hoverLocation);
+              
                 if (!double.IsNaN(aftertransformhoverloc.X))
                 {
                     mylblClickCount.Content = CoordinateFormatter.ToLatitudeLongitude(aftertransformhoverloc, LatitudeLongitudeFormat.DegreesDecimalMinutes, 4);
